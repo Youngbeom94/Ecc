@@ -44,7 +44,7 @@ int main()
 }
 #endif
 
-#if 1 //file test
+#if 1 //file test for verification of Operation
 int main()
 {
     int cnt_i, cnt_j = 0;
