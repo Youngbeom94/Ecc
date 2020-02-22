@@ -85,6 +85,7 @@ int main()
     word bt_y[8] = {0x4fe342e2, 0xfe1a7f9b, 0x8ee7eb4a, 0x7c0f9e16, 0x2bce3357, 0x6b315ece, 0xcbb64068, 0x37bf51f5};
     word inputdata_a[8] = {0xFFFFFFFF, 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFC};
     word Prime_array[8] = {0xFFFFFFFF, 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
+    char NAF[WORD_LEN *WORD_BITLEN] = {0x00};
     set_bigint(&Prime, Prime_array);
     set_bigint(&a, inputdata_a);
     set_EN(&Based_Pt, bt_x, bt_y);
@@ -158,15 +159,19 @@ int main()
         set_bigint(&rsm_y, Input_rsm_y);
         set_EN_reset(&osm);
 
+        
+
         // cycles1 = cpucycles(); //todo
         // Addition(&opA, &opB, &oadd, &Prime);
         // Subtraction(&opA, &opB, &osub, &Prime);
         // OS64MUL_256(&opC, &opC, &osqr, &Prime);
         // show_EN(&Based_Pt);
         // Inverse_FLT(&opD, &oinv, &Prime);
-        Inverse_EEA(&opD, &oinv, &Prime);
+        // Inverse_EEA(&opD, &oinv, &Prime);
         // ECLtoR(&Based_Pt, &Scalar, &osm, &Prime, &a);
         // ECRtoL(&Based_Pt, &Scalar, &osm, &Prime, &a);
+        NAF_recoding(&Scalar,NAF,&Prime);//*
+        ECLtoR_wNAF(&Based_Pt,NAF,&osm,&Prime,&a);//*
         // Trns_A_to_J(&in,&Based_Pt, &Prime); //* L_to_R
         // ECLtoR_J(&in,&Scalar,&out, &Prime); //* L_to_R
         // Trns_J_to_A(&osm,&out,&Prime);      //* L_to_R
@@ -181,18 +186,18 @@ int main()
         //     printf("sqr NOT true\n");                   //!sqr
         // if (Compare(&rinv, &oinv) != BOTH_ARE_SAME)     //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
         //     printf("inv NOT true\n");                   //!inv
-        // if (Compare(&rsm_x, &(osm.x)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
-        //     printf("SM_X NOT true\n");                  //!SM_X
+        if (Compare(&rsm_x, &(osm.x)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
+            // printf("SM_X NOT true\n");                  //!SM_X
         // if (Compare(&rsm_y, &(osm.y)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
         // printf("SM_Y NOT true\n");                  //!SM_Y
 
         for (cnt_i = 0; cnt_i < 8; cnt_i++)
         {
 
-            res = fprintf(O_SUB, "%08X", osub.a[8 - cnt_i - 1]);
-            res = fprintf(O_ADD, "%08X", oadd.a[8 - cnt_i - 1]);
-            res = fprintf(O_SQR, "%08X", osqr.a[8 - cnt_i - 1]);
-            res = fprintf(O_INV, "%08X", oinv.a[8 - cnt_i - 1]);
+            // res = fprintf(O_SUB, "%08X", osub.a[8 - cnt_i - 1]);
+            // res = fprintf(O_ADD, "%08X", oadd.a[8 - cnt_i - 1]);
+            // res = fprintf(O_SQR, "%08X", osqr.a[8 - cnt_i - 1]);
+            // res = fprintf(O_INV, "%08X", oinv.a[8 - cnt_i - 1]);
             res = fprintf(O_SM, "%08X", osm.x.a[8 - cnt_i - 1]);
         }
         res = fprintf(O_SM, "\n");

@@ -19,6 +19,7 @@
 #define BOTH_ARE_SAME 0//! both are same for Compare function
 #define SCD_IS_BIG -1//! Second is big for Compare function
 #define ERROR -0xeeeee //! Error
+#define W 4 //! w = 4
 
 #define WORD_BITLEN 32
 
@@ -96,12 +97,14 @@ void show_EN(Ecc_pt *EN_P);
 void show_EN_J(Ecc_Jpt *EN_X);
 void EN_copy(Ecc_pt *EN_dst,Ecc_pt *EN_src);
 void EN_J_copy(Ecc_Jpt *EN_dst,Ecc_Jpt *EN_src);
+void NAF_recoding(bigint_st *Scalar, char *NAF, bigint_st *Prime);
 void ECADD(Ecc_pt *EN_P, Ecc_pt *EN_Q, Ecc_pt *EN_R, bigint_st *Prime);
 void ECDBL(Ecc_pt *EN_P,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
 void ECDBL_J(Ecc_Jpt *EN_P,Ecc_Jpt *EN_R, bigint_st *Prime);
 void ECADD_J(Ecc_Jpt *EN_P,Ecc_pt *EN_Q,Ecc_Jpt *EN_R, bigint_st *Prime);
 void ECLtoR(Ecc_pt *EN_P, bigint_st *K ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
-void ECLtoR_Comb(Ecc_pt *EN_P, bigint_st *K ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
+void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
+void Find_Pi(Ecc_pt *Pi,char *NAF, int *cnt_i,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
 void ECLtoR_J(Ecc_Jpt *EN_P, bigint_st *K ,Ecc_Jpt *EN_R, bigint_st *Prime);
 void ECRtoL(Ecc_pt *EN_P, bigint_st *K ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
 
