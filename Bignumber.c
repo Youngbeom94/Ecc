@@ -36,6 +36,7 @@ void copy_bigint(bigint_st *dst, bigint_st *src)
 
 void show(bigint_st *bi_X) //? 숫자를 보여주는 함수
 {
+    
     int cnt_i;
 
     printf("0x");
@@ -939,6 +940,10 @@ void ECLtoR_J(Ecc_Jpt *EN_P, bigint_st *K, Ecc_Jpt *EN_R, bigint_st *Prime)
         }
     }
     EN_J_copy(EN_R, &temp1);
+}
+void ECLtoR_Comb(Ecc_pt *EN_P, bigint_st *K ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a)
+{
+    
 }
 
 void ECRtoL(Ecc_pt *EN_P, bigint_st *K, Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a)

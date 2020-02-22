@@ -101,6 +101,7 @@ void ECDBL(Ecc_pt *EN_P,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
 void ECDBL_J(Ecc_Jpt *EN_P,Ecc_Jpt *EN_R, bigint_st *Prime);
 void ECADD_J(Ecc_Jpt *EN_P,Ecc_pt *EN_Q,Ecc_Jpt *EN_R, bigint_st *Prime);
 void ECLtoR(Ecc_pt *EN_P, bigint_st *K ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
+void ECLtoR_Comb(Ecc_pt *EN_P, bigint_st *K ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
 void ECLtoR_J(Ecc_Jpt *EN_P, bigint_st *K ,Ecc_Jpt *EN_R, bigint_st *Prime);
 void ECRtoL(Ecc_pt *EN_P, bigint_st *K ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
 
