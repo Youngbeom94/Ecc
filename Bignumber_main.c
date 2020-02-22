@@ -1,5 +1,5 @@
 #include "Bignumber.h"
-//test for commit
+//test for Ecc Operation
 #if 0
 int main()
 {
@@ -44,7 +44,7 @@ int main()
 }
 #endif
 
-#if 1 //파일 입출력 용
+#if 1 //file test
 int main()
 {
     int cnt_i, cnt_j = 0;
