@@ -1,5 +1,5 @@
 #include "Bignumber.h"
-//test for Ecc Operation
+//test for Ecc Operation (ECDBL, ECADD)
 #if 0
 int main()
 {
