@@ -1,48 +1,4 @@
 #include "Bignumber.h"
-//test for Ecc Operation
-#if 0
-int main()
-{
-    bigint_st Prime = {{0x00}, 0x00};
-    Ecc_pt Based_Pt = {{0x00}, 0x00};
-    Ecc_pt D2 = {{0x00}, 0x00};
-    Ecc_pt D3 = {{0x00}, 0x00};
-    word bt_x[8] = {0x6b17d1f2, 0xe12c4247, 0xf8bce6e5, 0x63a440f2, 0x77037d81, 0x2deb33a0, 0xf4a13945, 0xd898c296};
-    word bt_y[8] = {0x4fe342e2, 0xfe1a7f9b, 0x8ee7eb4a, 0x7c0f9e16, 0x2bce3357, 0x6b315ece, 0xcbb64068, 0x37bf51f5};
-    word bt2_x[8] = {0x7cf27b18, 0x8d034f7e, 0x8a523803, 0x04b51ac3, 0xc08969e2, 0x77f21b35, 0xa60b48fc, 0x47669978};
-    word bt2_y[8] = {0x07775510, 0xdb8ed040, 0x293d9ac6, 0x9f7430db, 0xba7dade6, 0x3ce98229, 0x9e04b79d, 0x227873d1};
-    word bt3_x[8] = {0x5ecbe4d1, 0xa6330a44, 0xc8f7ef95, 0x1d4bf165, 0xe6c6b721, 0xefada985, 0xfb41661b, 0xc6e7fd6c};
-    word bt3_y[8] = {0x8734640c, 0x4998ff7e, 0x374b06ce, 0x1a64a2ec, 0xd82ab036, 0x384fb83d, 0x9a79b127, 0xa27d5032};
-    word Prime_array[8] = {0xFFFFFFFF, 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
-    set_bigint(&Prime, Prime_array);
-    set_EN(&Based_Pt, bt_x, bt_y);
-    set_EN(&D2, bt2_x, bt2_y);
-    set_EN(&D3, bt3_x, bt3_y);
-    Ecc_Jpt Bst_pt = {{0x00},0x00};
-    Ecc_Jpt result = {{0x00},0x00};
-    Ecc_pt result_Affin = {{0x00},0x00};
-
-    //!DBL 확인용
-    // Trns_A_to_J(&Bst_pt,&Based_Pt,&Prime);
-    // // show_EN(&Based_Pt);
-    // // show_EN_J(&Bst_pt);
-    // ECDBL_J(&Bst_pt,&result,&Prime);
-    // // show_EN_J(&result);
-    // Trns_J_to_A(&result_Affin,&result,&Prime);
-    // show_EN(&result_Affin);
-
-    //!Add 확인용
-    Trns_A_to_J(&Bst_pt,&Based_Pt,&Prime);
-    // Trns_A_to_J(&Bst_pt,&D2,&Prime);
-    ECADD_J(&Bst_pt,&D2,&result,&Prime);
-    show_EN_J(&result);
-    // Trns_J_to_A(&result_Affin,&result,&Prime);
-    // show_EN(&result_Affin);
-
-    return 0 ;
-    
-}
-#endif
 
 #if 1 //file test for verification of Operation
 int main()
