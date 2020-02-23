@@ -41,7 +41,7 @@ int main()
     word bt_y[8] = {0x4fe342e2, 0xfe1a7f9b, 0x8ee7eb4a, 0x7c0f9e16, 0x2bce3357, 0x6b315ece, 0xcbb64068, 0x37bf51f5};
     word inputdata_a[8] = {0xFFFFFFFF, 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFC};
     word Prime_array[8] = {0xFFFFFFFF, 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
-    char NAF[WORD_LEN *WORD_BITLEN] = {0x00};
+    char NAF[WORD_LEN *WORD_BITLEN + 1] = {0x00};
     set_bigint(&Prime, Prime_array);
     set_bigint(&a, inputdata_a);
     set_EN(&Based_Pt, bt_x, bt_y);
@@ -143,7 +143,7 @@ int main()
         // if (Compare(&rinv, &oinv) != BOTH_ARE_SAME)     //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
         //     printf("inv NOT true\n");                   //!inv
         if (Compare(&rsm_x, &(osm.x)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
-            // printf("SM_X NOT true\n");                  //!SM_X
+            printf("SM_X NOT true\n");                  //!SM_X
         // if (Compare(&rsm_y, &(osm.y)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
         // printf("SM_Y NOT true\n");                  //!SM_Y
 

@@ -1006,12 +1006,23 @@ void NAF_recoding(bigint_st *Scalar, char *NAF, bigint_st *Prime)
     {
         if (isEven(&K) != TRUE)
         {
-            NAF[cnt_i] = K.a[0] & 0x0f;
-            temp.a[0] = NAF[cnt_i];
-            Subtraction(&K, &temp, &temp2, Prime);
-            copy_bigint(&K, &temp2);
-            if(NAF[cnt_i] > 8)
-                NAF[cnt_i] = NAF[cnt_i] - 16;   
+            NAF[cnt_i] = K.a[0] & 0x0000000f;
+            if (NAF[cnt_i] > 8)
+            {
+                NAF[cnt_i] = NAF[cnt_i] - 16;
+                modtemp = NAF[cnt_i];
+
+                modtemp = ~(modtemp) + 1;
+                temp.a[0] = modtemp;
+                Addition(&K, &temp, &temp2, Prime);
+                copy_bigint(&K, &temp2);
+            }
+            else
+            {
+                temp.a[0] = NAF[cnt_i];
+                Subtraction(&K, &temp, &temp2, Prime);
+                copy_bigint(&K, &temp2);
+            }
         }
         else
         {
@@ -1024,38 +1035,27 @@ void NAF_recoding(bigint_st *Scalar, char *NAF, bigint_st *Prime)
     // {
     //     printf("%d ",NAF[cnt_i]);
     // }
-   
 }
 void Find_Pi(Ecc_pt *Pi, char *NAF, int *cnt_i, Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a)
 {
     char k = NAF[*cnt_i];
     Ecc_pt Prime_pt = {{0x00}, 0x00};
     Ecc_pt temp = {{0x00}, 0x00};
-    copy_bigint(&(Prime_pt.x), Prime);
-    copy_bigint(&(Prime_pt.y), Prime);
-
-    if (k >= 0)
-    {
-        EN_R = &Pi[((NAF[*cnt_i] - 1) / 2)];
-    }
-
-    else
-    {
-        EN_R = &Pi[((-NAF[*cnt_i] - 1) / 2)];
-        ECADD(EN_R, &Prime_pt, &temp, Prime);
-        EN_copy(EN_R, &temp);
-    }
+    // copy_bigint(&(Prime_pt.x), Prime);
+    // copy_bigint(&(Prime_pt.y), Prime);
+    
+    EN_R = &Pi[((NAF[*cnt_i] - 1) / 2)];
 }
 
 void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF, Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a)
 {
     int cnt_i = 0, cnt_j = 0;
     int DC = 0x00;
-    Ecc_pt temp1 = {{0x00}, 0x00};
-    Ecc_pt temp2 = {{0x00}, 0x00};
-    Ecc_pt temp3 = {{0x00}, 0x00};
-    Ecc_pt temp_P = {{0x00}, 0x00};
-    Ecc_pt Pi[4] = {{0x00}, 0x00};
+    Ecc_pt temp1 = {{0x00}, {0x00}};
+    Ecc_pt temp2 = {{0x00}, {0x00}};
+    Ecc_pt temp3 = {{0x00}, {0x00}};
+    Ecc_pt temp_P = {{0x00}, {0x00}};
+    Ecc_pt Pi[4] = {{0x00}, {0x00}};
 
     Pi[0] = *EN_P; //* 1
     ECDBL(EN_P, &temp1, Prime, a);
@@ -1069,10 +1069,10 @@ void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF, Ecc_pt *EN_R, bigint_st *Prime, bigint
     int find_first_bit = 0;
     int count = 0; //?
     //!reset?
-    for (cnt_i = WORD_LEN * WORD_BITLEN - 1; cnt_i >= 0; cnt_i--)
+    for (cnt_i = WORD_LEN * WORD_BITLEN; cnt_i >= 0; cnt_i--)
     {
 
-        if (cnt_i == WORD_LEN * WORD_BITLEN - 1)
+        if (cnt_i >= WORD_LEN * WORD_BITLEN -31)
         {
             if (find_first_bit == 1)
             {
@@ -1129,5 +1129,4 @@ void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF, Ecc_pt *EN_R, bigint_st *Prime, bigint
         continue;
     }
     EN_copy(EN_R, &temp1);
-    
 }
