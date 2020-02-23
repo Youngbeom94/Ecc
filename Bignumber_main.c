@@ -115,7 +115,6 @@ int main()
         set_bigint(&rsm_y, Input_rsm_y);
         set_EN_reset(&osm);
 
-        
 
         // cycles1 = cpucycles(); //todo
         // Addition(&opA, &opB, &oadd, &Prime);
@@ -126,8 +125,8 @@ int main()
         // Inverse_EEA(&opD, &oinv, &Prime);
         // ECLtoR(&Based_Pt, &Scalar, &osm, &Prime, &a);
         // ECRtoL(&Based_Pt, &Scalar, &osm, &Prime, &a);
-        NAF_recoding(&Scalar,NAF,&Prime);//*
-        ECLtoR_wNAF(&Based_Pt,NAF,&osm,&Prime,&a);//*
+        NAF_recoding(&Scalar,NAF,&Prime);//* NAF_recording
+        ECLtoR_wNAF(&Based_Pt,NAF,&osm,&Prime,&a);//* NaF_recording
         // Trns_A_to_J(&in,&Based_Pt, &Prime); //* L_to_R
         // ECLtoR_J(&in,&Scalar,&out, &Prime); //* L_to_R
         // Trns_J_to_A(&osm,&out,&Prime);      //* L_to_R
