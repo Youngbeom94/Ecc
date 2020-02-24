@@ -996,88 +996,135 @@ void NAF_recoding(bigint_st *Scalar, char *NAF, bigint_st *Prime)
         RightShift(&K);
         cnt_i++;
     }
-    // for (cnt_i = 256; cnt_i >= 0; cnt_i--)
-    // {
-    //     printf("%d ", NAF[cnt_i]);
-    // }
 }
 
-void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF, Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a)
+void ECLtoR_J_wAF(Ecc_Jpt *EN_P, char *NAF, Ecc_Jpt *EN_R, bigint_st *Prime)
 {
     int cnt_i = 0, cnt_j = 0;
     int DC = 0x00;
-    Ecc_pt temp1 = {{0x00}, {0x00}};
-    Ecc_pt temp2 = {{0x00}, {0x00}};
-    Ecc_pt temp3 = {{0x00}, {0x00}};
-    bigint_st zero = {{0x00},0x00};
-    Ecc_pt temp_P = {{0x00}, {0x00}};
-    Ecc_pt temp_Prime = {{0x00}, {0x00}};
-    Ecc_pt Pi[4] = {{0x00}, {0x00}};
-    Ecc_pt Pi2[4] = {{0x00}, {0x00}};
+    Ecc_Jpt temp1 = {{0x00}, 0x00};
+    Ecc_Jpt temp2 = {{0x00}, 0x00};
+    Ecc_Jpt temp3 = {{0x00}, 0x00};
+    Ecc_Jpt Pi[4] = {{0x00}, 0x00};
+    Ecc_Jpt Pi2[4] = {{0x00}, 0x00};
+    Ecc_pt ttemp = {{0x00}, 0x00};
+    char temp = 0;
 
-    EN_copy(Pi, EN_P); //* 1
-    ECDBL(EN_P, &temp1, Prime, a);
-    ECADD(EN_P, &temp1, &temp2, Prime);
-    EN_copy(Pi + 1, &temp2); //* 3
-    ECADD(&temp1, &temp2, &temp3, Prime);
-    EN_copy(Pi + 2, &temp3); //* 5
-    ECADD(&temp1, &temp3, &temp2, Prime);
-    EN_copy(Pi + 3, &temp2); //* 7
+    EN_J_copy(Pi, EN_P); //* 1
 
-    EN_copy(Pi2, Pi); //* 1
-    Subtraction(Prime,&(Pi[0].y),&(Pi2[0].y),Prime);
-    EN_copy(Pi2+1, Pi+1); //* 3
-    Subtraction(Prime,&(Pi[1].y),&(Pi2[1].y),Prime);
-    EN_copy(Pi2+2, Pi+2); //* 5
-    Subtraction(Prime,&(Pi[2].y),&(Pi2[2].y),Prime);
-    EN_copy(Pi2+3, Pi+3); //* 7
-    Subtraction(Prime,&(Pi[3].y),&(Pi2[3].y),Prime);
-    
+    ECDBL_J(EN_P, &temp1, Prime);
+    Trns_J_to_A(&ttemp, &temp1, Prime);
+    ECADD_J(EN_P, &ttemp, &temp2, Prime);
+    EN_J_copy(Pi + 1, &temp2); //* 3
+    ECADD_J(Pi + 1, &ttemp, &temp3, Prime);
+    EN_J_copy(Pi + 2, &temp3); //* 5
+    ECADD_J(Pi + 2, &ttemp, &temp3, Prime);
+    EN_J_copy(Pi + 3, &temp3); //* 7
+
+    EN_J_copy(Pi2, Pi); //* 1
+    Subtraction(Prime, &(Pi[0].y), &(Pi2[0].y), Prime);
+    EN_J_copy(Pi2 + 1, Pi + 1); //* 3
+    Subtraction(Prime, &(Pi[1].y), &(Pi2[1].y), Prime);
+    EN_J_copy(Pi2 + 2, Pi + 2); //* 5
+    Subtraction(Prime, &(Pi[2].y), &(Pi2[2].y), Prime);
+    EN_J_copy(Pi2 + 3, Pi + 3); //* 7
+    Subtraction(Prime, &(Pi[3].y), &(Pi2[3].y), Prime);
 
     int find_first_bit = 0;
-    int count = 0; //?
     //!reset?
     for (cnt_i = WORD_LEN * WORD_BITLEN + 1; cnt_i >= 0; cnt_i--)
     {
         if (find_first_bit == 1)
         {
-            ECDBL(&temp1, &temp2, Prime, a);
+            ECDBL_J(&temp1, &temp2, Prime);
             if (NAF[cnt_i] != 0x00)
             {
                 if (NAF[cnt_i] > 0x00)
                 {
-                    EN_copy(&temp_P, &Pi[((NAF[cnt_i] - 1) / 2)]);
-                    ECADD(&temp2, &temp_P, &temp3, Prime);
-                    EN_copy(&temp1, &temp3);
+                    Trns_J_to_A(&ttemp, &Pi[((NAF[cnt_i] - 1) / 2)], Prime);
+                    ECADD_J(&temp2, &ttemp, &temp3, Prime);
+                    EN_J_copy(&temp1, &temp3);
                     continue;
                 }
                 else
                 {
-                    EN_copy(&temp_P, &Pi2[((-NAF[cnt_i] - 1) / 2)]);
-                    ECADD(&temp2, &temp_P, &temp3, Prime);
-                    EN_copy(&temp1, &temp3);
+                    Trns_J_to_A(&ttemp, &Pi2[((-NAF[cnt_i] - 1) / 2)], Prime);
+                    ECADD_J(&temp2, &ttemp, &temp3, Prime);
+                    EN_J_copy(&temp1, &temp3);
                     continue;
                 }
             }
-            EN_copy(&temp1, &temp2);
+            EN_J_copy(&temp1, &temp2);
             continue;
         }
         if (NAF[cnt_i] == 0)
             continue;
         if (NAF[cnt_i] != 0)
         {
-            if (NAF[cnt_i] > 0)
-            {
-                EN_copy(&temp1, &Pi[((NAF[cnt_i] - 1) / 2)]);
-                find_first_bit = 1;
-            }
-            else
-            {
-                EN_copy(&temp1, &Pi2[((-NAF[cnt_i] - 1) / 2)]);
-                find_first_bit = 1;
-            }
+            EN_J_copy(&temp1, &Pi[((NAF[cnt_i] - 1) / 2)]);
+            find_first_bit = 1;
         }
         continue;
     }
-    EN_copy(EN_R, &temp1);
+    EN_J_copy(EN_R, &temp1);
+}
+
+void comb_Table(char table[WORD_LEN][WORD_BITLEN], Ecc_pt *J_table, Ecc_pt *EN_P, bigint_st *K, bigint_st *Prime)
+{
+    int cnt_i, cnt_j;
+    Ecc_Jpt temp = {0x00};
+    Ecc_Jpt temp2 = {0x00};
+    Ecc_pt ttemp = {0x00};
+    EN_copy(J_table, EN_P);   
+    EN_copy(J_table + 1, EN_P); 
+    for (cnt_i = 1; cnt_i < 8; cnt_i++)
+    {
+        for (cnt_j = 0; cnt_j < 32; cnt_j++)
+        {
+            Trns_A_to_J(&temp, J_table + cnt_i, Prime);
+            ECDBL_J(&temp, &temp2, Prime);
+            Trns_J_to_A(&ttemp, &temp2, Prime);
+            EN_copy(J_table + cnt_i, &ttemp);
+        }
+        EN_copy(&J_table[cnt_i + 1], &J_table[cnt_i]); 
+    }
+
+    for (cnt_i = 0; cnt_i < WORD_LEN; cnt_i++)
+    {
+        for (cnt_j = 0; cnt_j < WORD_BITLEN; cnt_j++)
+        {
+            table[cnt_i][cnt_j] = (K->a[cnt_i] >> (WORD_BITLEN - cnt_j - 1)) & 0x01;
+        }
+    }
+}
+void ECLtoR_J_comb(Ecc_Jpt *EN_P, char table[WORD_LEN][WORD_BITLEN], Ecc_pt *J_Table, Ecc_Jpt *EN_R, bigint_st *Prime)
+{
+    int cnt_i = 0, cnt_j = 0;
+    int bit_check = 0;
+    Ecc_Jpt jtemp = {{0x00}, 0x00};
+    Ecc_Jpt jtemp2 = {{0x00}, 0x00};
+
+    for (cnt_i = 0; cnt_i < WORD_BITLEN; cnt_i++)
+    {
+        for (cnt_j = 0; cnt_j < WORD_LEN; cnt_j++)
+        {
+            if (table[cnt_j][cnt_i] == 1)
+            {
+                bit_check += 1;
+                if (bit_check == 1)
+                {
+                    Trns_A_to_J(&jtemp, &J_Table[cnt_j], Prime);
+                    EN_J_copy(&jtemp2, &jtemp);
+                }
+                else
+                {
+                    ECADD_J(&jtemp2, J_Table + cnt_j, &jtemp, Prime);
+                    EN_J_copy(&jtemp2, &jtemp);
+                }
+            }
+        }
+        ECDBL_J(&jtemp2, &jtemp, Prime);
+        EN_J_copy(EN_R, &jtemp2);
+        EN_J_copy(&jtemp2, &jtemp);
+    }
 }

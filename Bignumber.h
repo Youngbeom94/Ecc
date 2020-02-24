@@ -97,15 +97,26 @@ void show_EN(Ecc_pt *EN_P);
 void show_EN_J(Ecc_Jpt *EN_X);
 void EN_copy(Ecc_pt *EN_dst,Ecc_pt *EN_src);
 void EN_J_copy(Ecc_Jpt *EN_dst,Ecc_Jpt *EN_src);
-void NAF_recoding(bigint_st *Scalar, char *NAF, bigint_st *Prime);
+
+// //! ECC ADD DBL two methods by Affin and Jacobian
 void ECADD(Ecc_pt *EN_P, Ecc_pt *EN_Q, Ecc_pt *EN_R, bigint_st *Prime);
 void ECDBL(Ecc_pt *EN_P,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
 void ECDBL_J(Ecc_Jpt *EN_P,Ecc_Jpt *EN_R, bigint_st *Prime);
 void ECADD_J(Ecc_Jpt *EN_P,Ecc_pt *EN_Q,Ecc_Jpt *EN_R, bigint_st *Prime);
+
+// //! ECC Scalar Mul by Affin
 void ECLtoR(Ecc_pt *EN_P, bigint_st *K ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
-void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
-void ECLtoR_J(Ecc_Jpt *EN_P, bigint_st *K ,Ecc_Jpt *EN_R, bigint_st *Prime);
 void ECRtoL(Ecc_pt *EN_P, bigint_st *K ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);
 
+// //! ECC Scalar Mul by Jacobian
+void ECLtoR_J(Ecc_Jpt *EN_P, bigint_st *K ,Ecc_Jpt *EN_R, bigint_st *Prime);
+
+// //! ECC Windows method of Scalar Mul by Jacobian
+void NAF_recoding(bigint_st *Scalar, char *NAF, bigint_st *Prime);
+void ECLtoR_J_wAF(Ecc_Jpt *EN_P, char *NAF ,Ecc_Jpt *EN_R, bigint_st *Prime);
+
+// //! ECC comb_table method of Scalar Mul by Jacobian
+void comb_Table(char Table[WORD_LEN][WORD_BITLEN],Ecc_pt *J_Table,Ecc_pt *EN_P, bigint_st *K ,bigint_st *Prime);
+void ECLtoR_J_comb(Ecc_Jpt *EN_P,char Table[WORD_LEN][WORD_BITLEN], Ecc_pt *J_Table ,Ecc_Jpt *EN_R, bigint_st *Prime);
 
 #endif

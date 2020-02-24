@@ -5,6 +5,9 @@ int main()
 {
     int cnt_i, cnt_j = 0;
     int res = 0;
+    char NAF[257] = {0x00};
+    char Table[WORD_LEN][WORD_BITLEN] = {0x00};
+    Ecc_pt J_Table[8] = {0x00};
     FILE *R_opA, *R_opB, *R_opC, *R_opD, *R_Scalar, *R_ADD, *R_SQR, *R_SUB, *R_INV, *R_SM, *O_ADD, *O_SUB, *O_SQR, *O_INV, *O_SM;
     R_opA = fopen("TV_opA.txt", "r");       // Read할 파일 개방
     R_opB = fopen("TV_opB.txt", "r");       // Read할 파일 개방
@@ -21,7 +24,6 @@ int main()
     O_SQR = fopen("test_sqr.txt", "w");     //Write할 파일 개방
     O_INV = fopen("test_inv.txt", "w");     //Write할 파일 개방
     O_SM = fopen("test_sm.txt", "w");       //Write할 파일 개방
-
     assert(R_opA != NULL);
     assert(R_opB != NULL);
     assert(R_opC != NULL);
@@ -41,7 +43,6 @@ int main()
     word bt_y[8] = {0x4fe342e2, 0xfe1a7f9b, 0x8ee7eb4a, 0x7c0f9e16, 0x2bce3357, 0x6b315ece, 0xcbb64068, 0x37bf51f5};
     word inputdata_a[8] = {0xFFFFFFFF, 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFC};
     word Prime_array[8] = {0xFFFFFFFF, 0x00000001, 0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
-    char NAF[WORD_LEN *WORD_BITLEN + 1] = {0x00};
     set_bigint(&Prime, Prime_array);
     set_bigint(&a, inputdata_a);
     set_EN(&Based_Pt, bt_x, bt_y);
@@ -79,10 +80,14 @@ int main()
     word Input_rsm_y[8] = {0x00};
 
     unsigned long long cycles1 = 0, cycles2 = 0, totalcycles = 0;
-    int time = 1; //!----------------------------------
+    int time = 1000; //!----------------------------------
 
     for (cnt_j = 0; cnt_j < time; cnt_j++)
     {
+        for (cnt_i = 0; cnt_i < 257; cnt_i++)
+        {
+            NAF[cnt_i] = 0x00; //? NAF 초기화
+        }
         for (cnt_i = 0; cnt_i < 8; cnt_i++)
         {
             res = fscanf(R_opA, "%08X", &Input_opa[cnt_i]);
@@ -114,7 +119,6 @@ int main()
         set_bigint(&rsm_y, Input_rsm_y);
         set_EN_reset(&osm);
 
-
         // cycles1 = cpucycles(); //todo
         // Addition(&opA, &opB, &oadd, &Prime);
         // Subtraction(&opA, &opB, &osub, &Prime);
@@ -124,11 +128,21 @@ int main()
         // Inverse_EEA(&opD, &oinv, &Prime);
         // ECLtoR(&Based_Pt, &Scalar, &osm, &Prime, &a);
         // ECRtoL(&Based_Pt, &Scalar, &osm, &Prime, &a);
-        NAF_recoding(&Scalar,NAF,&Prime);//* NAF_recording
-        ECLtoR_wNAF(&Based_Pt,NAF,&osm,&Prime,&a);//* NaF_recording
+
         // Trns_A_to_J(&in,&Based_Pt, &Prime); //* L_to_R
         // ECLtoR_J(&in,&Scalar,&out, &Prime); //* L_to_R
         // Trns_J_to_A(&osm,&out,&Prime);      //* L_to_R
+
+        // NAF_recoding(&Scalar, NAF, &Prime);   //?_wNAF_J
+        // Trns_A_to_J(&in, &Based_Pt, &Prime);  //? L_to_R _wNAF_J
+        // ECLtoR_J_wAF(&in, NAF, &out, &Prime); //? L_to_R _wNAF_J
+        // Trns_J_to_A(&osm, &out, &Prime);      //? L_to_R _wNAF_J
+
+        Trns_A_to_J(&in, &Based_Pt, &Prime);  //* L_to_R _Comb
+        comb_Table(Table, J_Table, &Based_Pt, &Scalar, &Prime);//* L_to_R _Comb
+        ECLtoR_J_comb(&in, Table, J_Table, &out, &Prime);//* L_to_R _Comb
+        Trns_J_to_A(&osm, &out, &Prime); //* L_to_R _Comb
+
         // cycles2 = cpucycles();//todo
         // totalcycles += cycles2 -  cycles1;//todo
 
@@ -143,7 +157,7 @@ int main()
         if (Compare(&rsm_x, &(osm.x)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
             printf("SM_X NOT true\n");                  //!SM_X
         // if (Compare(&rsm_y, &(osm.y)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
-        // printf("SM_Y NOT true\n");                  //!SM_Y
+        //     printf("SM_Y NOT true\n");                  //!SM_Y
 
         for (cnt_i = 0; cnt_i < 8; cnt_i++)
         {
