@@ -83,7 +83,6 @@ int main()
 
     for (cnt_j = 0; cnt_j < time; cnt_j++)
     {
-
         for (cnt_i = 0; cnt_i < 8; cnt_i++)
         {
             res = fscanf(R_opA, "%08X", &Input_opa[cnt_i]);

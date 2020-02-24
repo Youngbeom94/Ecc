@@ -996,24 +996,10 @@ void NAF_recoding(bigint_st *Scalar, char *NAF, bigint_st *Prime)
         RightShift(&K);
         cnt_i++;
     }
-    for(cnt_i = 256 ; cnt_i >=0 ; cnt_i --)
-    {
-        printf("%d ",NAF[cnt_i]);
-    }
-}
-void Find_Pi(Ecc_pt *Pi, char *NAF, int *cnt_i, Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a)
-{
-    char k = NAF[*cnt_i];
-    Ecc_pt Prime_pt = {{0x00}, 0x00};
-    Ecc_pt temp = {{0x00}, 0x00};
-    if (NAF[*cnt_i] > 0)
-    {
-        EN_R = &Pi[((NAF[*cnt_i] - 1) / 2)];
-    }
-    else
-    {
-        EN_R = &Pi[((-NAF[*cnt_i] - 1) / 2)];
-    }
+    // for (cnt_i = 256; cnt_i >= 0; cnt_i--)
+    // {
+    //     printf("%d ", NAF[cnt_i]);
+    // }
 }
 
 void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF, Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a)
@@ -1023,28 +1009,39 @@ void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF, Ecc_pt *EN_R, bigint_st *Prime, bigint
     Ecc_pt temp1 = {{0x00}, {0x00}};
     Ecc_pt temp2 = {{0x00}, {0x00}};
     Ecc_pt temp3 = {{0x00}, {0x00}};
+    bigint_st zero = {{0x00},0x00};
     Ecc_pt temp_P = {{0x00}, {0x00}};
+    Ecc_pt temp_Prime = {{0x00}, {0x00}};
     Ecc_pt Pi[4] = {{0x00}, {0x00}};
+    Ecc_pt Pi2[4] = {{0x00}, {0x00}};
 
-    Pi[0] = *EN_P; //* 1
+    EN_copy(Pi, EN_P); //* 1
     ECDBL(EN_P, &temp1, Prime, a);
     ECADD(EN_P, &temp1, &temp2, Prime);
-    EN_copy(Pi + 1,&temp2);//* 3
+    EN_copy(Pi + 1, &temp2); //* 3
     ECADD(&temp1, &temp2, &temp3, Prime);
-    EN_copy(Pi + 2,&temp3);//* 5
+    EN_copy(Pi + 2, &temp3); //* 5
     ECADD(&temp1, &temp3, &temp2, Prime);
-    EN_copy(Pi + 3,&temp2);//* 7
+    EN_copy(Pi + 3, &temp2); //* 7
+
+    EN_copy(Pi2, Pi); //* 1
+    Subtraction(Prime,&(Pi[0].y),&(Pi2[0].y),Prime);
+    EN_copy(Pi2+1, Pi+1); //* 3
+    Subtraction(Prime,&(Pi[1].y),&(Pi2[1].y),Prime);
+    EN_copy(Pi2+2, Pi+2); //* 5
+    Subtraction(Prime,&(Pi[2].y),&(Pi2[2].y),Prime);
+    EN_copy(Pi2+3, Pi+3); //* 7
+    Subtraction(Prime,&(Pi[3].y),&(Pi2[3].y),Prime);
+    
 
     int find_first_bit = 0;
     int count = 0; //?
     //!reset?
-    for (cnt_i = WORD_LEN * WORD_BITLEN; cnt_i >= 0; cnt_i--)
+    for (cnt_i = WORD_LEN * WORD_BITLEN + 1; cnt_i >= 0; cnt_i--)
     {
         if (find_first_bit == 1)
         {
             ECDBL(&temp1, &temp2, Prime, a);
-            printf("%d번쨰 %d\n", cnt_i, NAF[cnt_i]); //!
-            show_EN(&temp2);                          //!k
             if (NAF[cnt_i] != 0x00)
             {
                 if (NAF[cnt_i] > 0x00)
@@ -1052,24 +1049,17 @@ void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF, Ecc_pt *EN_R, bigint_st *Prime, bigint
                     EN_copy(&temp_P, &Pi[((NAF[cnt_i] - 1) / 2)]);
                     ECADD(&temp2, &temp_P, &temp3, Prime);
                     EN_copy(&temp1, &temp3);
-                    // printf("%d번쨰 %d\n", cnt_i, NAF[cnt_i]); //!
-                    // show_EN(&temp1);                          //!k
                     continue;
                 }
                 else
                 {
-                    EN_copy(&temp_P, &Pi[((-NAF[cnt_i] - 1) / 2)]);
-                    // EN_copy(&temp_P, &Pi[((NAF[cnt_i] + 7) / 2)]);//?
+                    EN_copy(&temp_P, &Pi2[((-NAF[cnt_i] - 1) / 2)]);
                     ECADD(&temp2, &temp_P, &temp3, Prime);
                     EN_copy(&temp1, &temp3);
-                    // printf("%d번쨰 %d\n", cnt_i, NAF[cnt_i]); //!
-                    // show_EN(&temp1);                          //!
                     continue;
                 }
             }
             EN_copy(&temp1, &temp2);
-            // printf("%d번쨰 %d -dbl\n", cnt_i, NAF[cnt_i]); //!
-            // show_EN(&temp1);                          //!
             continue;
         }
         if (NAF[cnt_i] == 0)
@@ -1079,16 +1069,11 @@ void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF, Ecc_pt *EN_R, bigint_st *Prime, bigint
             if (NAF[cnt_i] > 0)
             {
                 EN_copy(&temp1, &Pi[((NAF[cnt_i] - 1) / 2)]);
-                // printf("%d번쨰 %d\n", cnt_i, NAF[cnt_i]); //!
-                // show_EN(&temp1);                          //!
                 find_first_bit = 1;
             }
             else
             {
-                EN_copy(&temp1, &Pi[((-NAF[cnt_i] - 1) / 2)]);
-                // EN_copy(&temp_P, &Pi[((NAF[cnt_i] + 7) / 2)]);//?
-                // printf("%d번쨰 %d\n", cnt_i, NAF[cnt_i]); //!
-                // show_EN(&temp1);                          //!
+                EN_copy(&temp1, &Pi2[((-NAF[cnt_i] - 1) / 2)]);
                 find_first_bit = 1;
             }
         }
@@ -1096,98 +1081,3 @@ void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF, Ecc_pt *EN_R, bigint_st *Prime, bigint
     }
     EN_copy(EN_R, &temp1);
 }
-
-
- // int cnt_i = 0, cnt_j = 0;
-    // int DC = 0x00;
-    // Ecc_pt temp1 = {{0x00}, {0x00}};
-    // Ecc_pt temp2 = {{0x00}, {0x00}};
-    // Ecc_pt temp3 = {{0x00}, {0x00}};
-    // Ecc_pt temp_P = {{0x00}, {0x00}};
-    // Ecc_pt temp_Prime = {{0x00}, {0x00}};
-    // Ecc_pt Pi[4] = {{0x00}, {0x00}};
-    // Ecc_pt Pi2[4] = {{0x00}, {0x00}};
-    // copy_bigint(&(Pi2->x),Prime);
-    // copy_bigint(&(Pi2->y),Prime);
-    
-    // Pi[0] = *EN_P; //* 1
-    // ECDBL(EN_P, &temp1, Prime, a);
-    // ECADD(EN_P, &temp1, &temp2, Prime);
-    // EN_copy(Pi + 1,&temp2);//* 3
-    // ECADD(&temp1, &temp2, &temp3, Prime);
-    // EN_copy(Pi + 2,&temp3);//* 5
-    // ECADD(&temp1, &temp3, &temp2, Prime);
-    // EN_copy(Pi + 3,&temp2);//* 7
-
-
-    // ECADD(Pi,&temp_Prime,&temp1, Prime);
-    // EN_copy(Pi2,&temp1);
-    // ECADD(Pi + 1,&temp_Prime,&temp1, Prime);
-    // EN_copy(Pi2 + 1,&temp1);
-    // ECADD(Pi + 2,&temp_Prime,&temp1, Prime);
-    // EN_copy(Pi2 + 2,&temp1);
-    // ECADD(Pi + 3,&temp_Prime,&temp1, Prime);
-    // EN_copy(Pi2 + 3,&temp1);
-
-    // int find_first_bit = 0;
-    // int count = 0; //?
-    // //!reset?
-    // for (cnt_i = WORD_LEN * WORD_BITLEN; cnt_i >= 0; cnt_i--)
-    // {
-    //     if (find_first_bit == 1)
-    //     {
-    //         ECDBL(&temp1, &temp2, Prime, a);
-    //         // printf("%d번쨰 %d\n", cnt_i, NAF[cnt_i]); //!
-    //         // show_EN(&temp2);                          //!k
-    //         if (NAF[cnt_i] != 0x00)
-    //         {
-    //             if (NAF[cnt_i] > 0x00)
-    //             {
-    //                 EN_copy(&temp_P, &Pi[((NAF[cnt_i] - 1) / 2)]);
-    //                 ECADD(&temp2, &temp_P, &temp3, Prime);
-    //                 EN_copy(&temp1, &temp3);
-    //                 // printf("%d번쨰 %d\n", cnt_i, NAF[cnt_i]); //!
-    //                 // show_EN(&temp1);                          //!k
-    //                 continue;
-    //             }
-    //             else
-    //             {
-    //                 EN_copy(&temp_P, &Pi2[((-NAF[cnt_i] - 1) / 2)]);
-    //                 ECADD(&temp2, &temp_P, &temp3, Prime);
-    //                 EN_copy(&temp1, &temp3);
-    //                 // printf("%d번쨰 %d\n", cnt_i, NAF[cnt_i]); //!
-    //                 // show_EN(&temp1);                          //!
-    //                 continue;
-    //             }
-    //         }
-    //         EN_copy(&temp1, &temp2);
-    //         // printf("%d번쨰 %d -dbl\n", cnt_i, NAF[cnt_i]); //!
-    //         // show_EN(&temp1);                          //!
-    //         continue;
-    //     }
-    //     if (NAF[cnt_i] == 0)
-    //         continue;
-    //     if (NAF[cnt_i] != 0)
-    //     {
-    //         if (NAF[cnt_i] > 0)
-    //         {
-    //             EN_copy(&temp1, &Pi[((NAF[cnt_i] - 1) / 2)]);
-    //             // ECDBL(&temp1, &temp2, Prime, a);//?
-    //             // EN_copy(&temp1, &temp2);//?
-    //             // printf("%d번쨰 %d\n", cnt_i, NAF[cnt_i]); //!
-    //             // show_EN(&temp1);                          //!
-    //             find_first_bit = 1;
-    //         }
-    //         else
-    //         {
-    //             EN_copy(&temp1, &Pi2[((-NAF[cnt_i] - 1) / 2)]);
-    //             // ECDBL(&temp1, &temp2, Prime, a);//?
-    //             // EN_copy(&temp1, &temp2);//?
-    //             // printf("%d번쨰 %d\n", cnt_i, NAF[cnt_i]); //!
-    //             // show_EN(&temp1);                          //!
-    //             find_first_bit = 1;
-    //         }
-    //     }
-    //     continue;
-    // }
-    // EN_copy(EN_R, &temp1);
