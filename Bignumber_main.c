@@ -80,7 +80,7 @@ int main()
     word Input_rsm_y[8] = {0x00};
 
     unsigned long long cycles1 = 0, cycles2 = 0, totalcycles = 0;
-    int time = 1000; //!----------------------------------
+    int time = 1; //!--------------------------------------------------
 
     for (cnt_j = 0; cnt_j < time; cnt_j++)
     {
@@ -119,7 +119,6 @@ int main()
         set_bigint(&rsm_y, Input_rsm_y);
         set_EN_reset(&osm);
 
-        // cycles1 = cpucycles(); //todo
         // Addition(&opA, &opB, &oadd, &Prime);
         // Subtraction(&opA, &opB, &osub, &Prime);
         // OS64MUL_256(&opC, &opC, &osqr, &Prime);
@@ -133,18 +132,19 @@ int main()
         // ECLtoR_J(&in,&Scalar,&out, &Prime); //* L_to_R
         // Trns_J_to_A(&osm,&out,&Prime);      //* L_to_R
 
-        // NAF_recoding(&Scalar, NAF, &Prime);   //?_wNAF_J
-        // Trns_A_to_J(&in, &Based_Pt, &Prime);  //? L_to_R _wNAF_J
-        // ECLtoR_J_wAF(&in, NAF, &out, &Prime); //? L_to_R _wNAF_J
-        // Trns_J_to_A(&osm, &out, &Prime);      //? L_to_R _wNAF_J
+        cycles1 = cpucycles(); //todo
+        NAF_recoding(&Scalar, NAF, &Prime);   //?_wNAF_J
+        Trns_A_to_J(&in, &Based_Pt, &Prime);  //? L_to_R _wNAF_J
+        ECLtoR_J_wNAF(&in, NAF, &out, &Prime); //? L_to_R _wNAF_J
+        Trns_J_to_A(&osm, &out, &Prime);      //? L_to_R _wNAF_J
+        cycles2 = cpucycles();//todo
 
-        Trns_A_to_J(&in, &Based_Pt, &Prime);  //* L_to_R _Comb
-        comb_Table(Table, J_Table, &Based_Pt, &Scalar, &Prime);//* L_to_R _Comb
-        ECLtoR_J_comb(&in, Table, J_Table, &out, &Prime);//* L_to_R _Comb
-        Trns_J_to_A(&osm, &out, &Prime); //* L_to_R _Comb
+        // Trns_A_to_J(&in, &Based_Pt, &Prime);  //* L_to_R _Comb
+        // comb_Table(Table, J_Table, &Based_Pt, &Scalar, &Prime);//* L_to_R _Comb
+        // ECLtoR_J_comb(&in, Table, J_Table, &out, &Prime);//* L_to_R _Comb
+        // Trns_J_to_A(&osm, &out, &Prime); //* L_to_R _Comb
 
-        // cycles2 = cpucycles();//todo
-        // totalcycles += cycles2 -  cycles1;//todo
+        totalcycles += cycles2 -  cycles1;//todo
 
         // if (Compare(&radd, &oadd) != BOTH_ARE_SAME)     //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
         //     printf("add NOT true\n");                   //!add
@@ -154,8 +154,8 @@ int main()
         //     printf("sqr NOT true\n");                   //!sqr
         // if (Compare(&rinv, &oinv) != BOTH_ARE_SAME)     //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
         //     printf("inv NOT true\n");                   //!inv
-        if (Compare(&rsm_x, &(osm.x)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
-            printf("SM_X NOT true\n");                  //!SM_X
+        // if (Compare(&rsm_x, &(osm.x)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
+            // printf("SM_X NOT true\n");                  //!SM_X
         // if (Compare(&rsm_y, &(osm.y)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
         //     printf("SM_Y NOT true\n");                  //!SM_Y
 
@@ -179,7 +179,7 @@ int main()
         fprintf(O_INV, "\n\n");
         fprintf(O_SM, "\n\n");
     }
-    // printf("cycles 10000 time = %10lld\n", totalcycles / time); //todo
+    printf("cycles 10000 time = %10lld\n", totalcycles / time); //todo
     fclose(R_opB);    //개방한 파일들 닫아주기
     fclose(R_opA);    //개방한 파일들 닫아주기
     fclose(R_opC);    //개방한 파일들 닫아주기

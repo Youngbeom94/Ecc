@@ -10,7 +10,7 @@ void set_bigint(bigint_st *bi_X, word *Input) //? Big_int 구조체에 값 설�
     int cnt_i;
     for (cnt_i = 0; cnt_i < WORD_LEN; cnt_i++)
     {
-        bi_X->a[cnt_i] = Input[WORD_LEN - (cnt_i + 1)]; //Input된 배열의 값을 실질적으로 대입해줌
+        bi_X->a[cnt_i] = Input[WORD_LEN - (cnt_i + 1)]; //? Input된 배열의 값을 실질적으로 대입해줌
     }
     bi_X->e = 0;
 }
@@ -998,7 +998,7 @@ void NAF_recoding(bigint_st *Scalar, char *NAF, bigint_st *Prime)
     }
 }
 
-void ECLtoR_J_wAF(Ecc_Jpt *EN_P, char *NAF, Ecc_Jpt *EN_R, bigint_st *Prime)
+void ECLtoR_J_wNAF(Ecc_Jpt *EN_P, char *NAF, Ecc_Jpt *EN_R, bigint_st *Prime)
 {
     int cnt_i = 0, cnt_j = 0;
     int DC = 0x00;
