@@ -5,22 +5,22 @@ long long cpucycles()
     return __rdtsc();
 }
 
-void set_bigint(bigint_st *bi_X, word *Input) //? Big_int 구조체에 값 설정해주는 함수
+void set_bigint(bigint_st *bi_X, word *Input) 
 {
     int cnt_i;
     for (cnt_i = 0; cnt_i < WORD_LEN; cnt_i++)
     {
-        bi_X->a[cnt_i] = Input[WORD_LEN - (cnt_i + 1)]; //? Input된 배열의 값을 실질적으로 대입해줌
+        bi_X->a[cnt_i] = Input[WORD_LEN - (cnt_i + 1)]; //? Input된 배열의 값을 실질적으로 대입해줌 단 메모리 저장순서는 역순으로 -> 계산의 편리성을 위하여
     }
     bi_X->e = 0;
 }
 
-void reset_bigint(bigint_st *bi_X) //?Big_int 구조체 0으로 초기화 해주는 함수
+void reset_bigint(bigint_st *bi_X) 
 {
     int cnt_i;
     for (cnt_i = 0; cnt_i < WORD_LEN; cnt_i++)
     {
-        bi_X->a[cnt_i] = 0x00; //Input된 배열의 값을 실질적으로 대입해줌
+        bi_X->a[cnt_i] = 0x00; //? Biginteger을 0으로 만들어주는 함수
     }
     bi_X->e = 0;
 }
@@ -29,7 +29,7 @@ void copy_bigint(bigint_st *dst, bigint_st *src)
     int cnt_i;
     for (cnt_i = 0; cnt_i < WORD_LEN; cnt_i++)
     {
-        dst->a[cnt_i] = src->a[cnt_i]; //Input된 배열의 값을 실질적으로 대입해줌
+        dst->a[cnt_i] = src->a[cnt_i]; 
     }
     dst->e = src->e;
 }
@@ -131,7 +131,7 @@ void Addition(bigint_st *bi_X, bigint_st *bi_Y, bigint_st *bi_Z, bigint_st *Prim
 
     for (cnt_i = 0; cnt_i < WORD_LEN; cnt_i++) //둘의 WORD_LEN이 같으므로 한번에 계산 가능하다
     {
-        bi_Z->a[cnt_i] = bi_X->a[cnt_i] + bi_Y->a[cnt_i] + carry; // 단순 덧셈. modulo는 자동적으로 작동
+        bi_Z->a[cnt_i] = bi_X->a[cnt_i] + bi_Y->a[cnt_i] + carry; // 단순 덧셈. modulo는 자동적으로 작동 (word = unsigned int)
         if (bi_X->a[cnt_i] == bi_Z->a[cnt_i])
             continue;
         carry = bi_X->a[cnt_i] > bi_Z->a[cnt_i] ? 1 : 0;
@@ -214,8 +214,8 @@ void Reduction(bigint_st *bi_X, bigint_st *Prime) //? 감산 함수.
 }
 
 void OS64MUL_256(bigint_st *bi_X, bigint_st *bi_Y, bigint_st *bi_Z, bigint_st *Prime)
-{
-    int cnt_i, cnt_j; //for loop counting variable
+{ //OS 64 Mul은 32bit 두개를 곱셈한 값을 저장시킬수있는 64bit 변수를 선언함으로써 가능하다.
+    int cnt_i, cnt_j; 
     unsigned long long UV = 0x00LL;
     unsigned int U, V = 0x00;
     word result[WORD_LEN * 2] = {0x00};
@@ -236,7 +236,7 @@ void OS64MUL_256(bigint_st *bi_X, bigint_st *bi_Y, bigint_st *bi_Z, bigint_st *P
     Reduction_256(result, bi_Z, Prime);
 }
 
-void Reduction_256(word *bi_X, bigint_st *bi_Z, bigint_st *Prime)
+void Reduction_256(word *bi_X, bigint_st *bi_Z, bigint_st *Prime)//? Using Fast reduction 256 method
 {
     int cnt_i = 0;
     bigint_st Temp1 = {{0x00}, 0x00};
@@ -289,7 +289,7 @@ void Reduction_256(word *bi_X, bigint_st *bi_Z, bigint_st *Prime)
     }
 }
 
-void Inverse_FLT(bigint_st *bi_X, bigint_st *bi_Z, bigint_st *Prime) //? Inv 함수
+void Inverse_FLT(bigint_st *bi_X, bigint_st *bi_Z, bigint_st *Prime) //? Inv 함수 하지만 거의 사용하지 않을것이고, 주로 EEA방법을 사용할 것입니다.
 {
     int cnt_i = 0;
     bigint_st z3 = {{0x00}, 0x00};
@@ -381,7 +381,6 @@ void Inverse_FLT(bigint_st *bi_X, bigint_st *bi_Z, bigint_st *Prime) //? Inv 함
     OS64MUL_256(&temp1, &temp1, &temp3, Prime);
     OS64MUL_256(&temp3, &t3, &t5, Prime);
 
-    //todo t
     OS64MUL_256(&t5, &t5, &temp1, Prime);
     for (cnt_i = 0; cnt_i < 14; cnt_i++) //* (n -2) /2
     {
@@ -395,7 +394,7 @@ void Inverse_FLT(bigint_st *bi_X, bigint_st *bi_Z, bigint_st *Prime) //? Inv 함
     OS64MUL_256(&temp1, &temp1, &temp2, Prime);
     OS64MUL_256(&temp2, bi_X, bi_Z, Prime);
 }
-void Inverse_EEA(bigint_st *bi_X, bigint_st *bi_Z, bigint_st *Prime)
+void Inverse_EEA(bigint_st *bi_X, bigint_st *bi_Z, bigint_st *Prime) // Inverse
 {
     bigint_st u = {{0x00}, 0x00};
     bigint_st v = {{0x00}, 0x00};
@@ -1037,6 +1036,7 @@ void ECLtoR_J_wNAF(Ecc_Jpt *EN_P, char *NAF, Ecc_Jpt *EN_R, bigint_st *Prime)
         if (find_first_bit == 1)
         {
             ECDBL_J(&temp1, &temp2, Prime);
+           
             if (NAF[cnt_i] != 0x00)
             {
                 if (NAF[cnt_i] > 0x00)
@@ -1096,6 +1096,7 @@ void comb_Table(char table[WORD_LEN][WORD_BITLEN], Ecc_pt *J_table, Ecc_pt *EN_P
             table[cnt_i][cnt_j] = (K->a[cnt_i] >> (WORD_BITLEN - cnt_j - 1)) & 0x01;
         }
     }
+
 }
 void ECLtoR_J_comb(Ecc_Jpt *EN_P, char table[WORD_LEN][WORD_BITLEN], Ecc_pt *J_Table, Ecc_Jpt *EN_R, bigint_st *Prime)
 {
@@ -1103,6 +1104,7 @@ void ECLtoR_J_comb(Ecc_Jpt *EN_P, char table[WORD_LEN][WORD_BITLEN], Ecc_pt *J_T
     int bit_check = 0;
     Ecc_Jpt jtemp = {{0x00}, 0x00};
     Ecc_Jpt jtemp2 = {{0x00}, 0x00};
+    Ecc_pt Q = {0x00,};
 
     for (cnt_i = 0; cnt_i < WORD_BITLEN; cnt_i++)
     {

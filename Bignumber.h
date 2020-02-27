@@ -34,25 +34,25 @@ typedef unsigned long long word;
 
 typedef struct{ //! Big number struct
     word a[WORD_LEN];
-    int e;
+    int e;//? flag carry or borrow
 } bigint_st;
 
 typedef struct { //! ECC Number struct
     bigint_st x;
     bigint_st y;
-    char isinfinity;
+    char isinfinity; //? flag for infinity point
 } Ecc_pt; //! Ecc point by Affin coordinate
 
 typedef struct{
     bigint_st x;
     bigint_st y;
     bigint_st z;
-    char isinfinity;
+    char isinfinity;//? flag for infinity point
 } Ecc_Jpt; //! Ecc point by Jacobian coordinate
 
 
 //! Test speed
-long long cpucycles();
+long long cpucycles();//? 성능측정용 함수 (cpu cycle calculate)
 
 //! basic function
 void set_bigint(bigint_st *bi_X, word *Input); //? Set Biginteger Using Array.
