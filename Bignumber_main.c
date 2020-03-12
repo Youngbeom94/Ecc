@@ -80,7 +80,7 @@ int main()
     word Input_rsm_y[8] = {0x00};
 
     unsigned long long cycles1 = 0, cycles2 = 0, totalcycles = 0;
-    int time = 1000; //!------------------------------------------- 1<=  time  <= 10000 몇번 확인?
+    int time = 10000; //!------------------------------------------- 1<=  time  <= 10000 몇번 확인?
 
     for (cnt_j = 0; cnt_j < time; cnt_j++)
     {
@@ -124,7 +124,7 @@ int main()
         // Addition(&opA, &opB, &oadd, &Prime);
         // Subtraction(&opA, &opB, &osub, &Prime);
         // OS64MUL_256(&opC, &opC, &osqr, &Prime);
-        // show_EN(&Based_Pt);
+        // PS_Split_MUL_256(&opC,&opC,&osqr, &Prime);
         // Inverse_FLT(&opD, &oinv, &Prime);
         // Inverse_EEA(&opD, &oinv, &Prime);
         // ECLtoR(&Based_Pt, &Scalar, &osm, &Prime, &a);
@@ -135,10 +135,10 @@ int main()
         // Trns_J_to_A(&osm,&out,&Prime);      //* L_to_R
 
         cycles1 = cpucycles(); //todo   ---------사이클을 재고싶은 함수 앞에 두기
-        NAF_recoding(&Scalar, NAF, &Prime);   //?_wNAF_J
-        Trns_A_to_J(&in, &Based_Pt, &Prime);  //? L_to_R _wNAF_J
-        ECLtoR_J_wNAF(&in, NAF, &out, &Prime); //? L_to_R _wNAF_J
-        Trns_J_to_A(&osm, &out, &Prime);      //? L_to_R _wNAF_J
+        // NAF_recoding(&Scalar, NAF, &Prime);   //?_wNAF_J
+        // Trns_A_to_J(&in, &Based_Pt, &Prime);  //? L_to_R _wNAF_J
+        // ECLtoR_J_wNAF(&in, NAF, &out, &Prime); //? L_to_R _wNAF_J
+        // Trns_J_to_A(&osm, &out, &Prime);      //? L_to_R _wNAF_J
         cycles2 = cpucycles();//todo    ----------사이클을 재고싶은 함수 뒤에 두기
 
         // Trns_A_to_J(&in, &Based_Pt, &Prime);  //* L_to_R _Comb
@@ -153,13 +153,13 @@ int main()
         // if (Compare(&rsub, &osub) != BOTH_ARE_SAME)     //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
         //     printf("sub NOT true\n");                   //!sub
         // if (Compare(&rsqr, &osqr) != BOTH_ARE_SAME)     //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
-        //     printf("sqr NOT true\n");                   //!sqr
+            // printf("sqr NOT true\n");                   //!sqr
         // if (Compare(&rinv, &oinv) != BOTH_ARE_SAME)     //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
         //     printf("inv NOT true\n");                   //!inv
-        if (Compare(&rsm_x, &(osm.x)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
-            printf("SM_X NOT true\n");                  //!SM_X
-        if (Compare(&rsm_y, &(osm.y)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
-            printf("SM_Y NOT true\n");                  //!SM_Y
+        // if (Compare(&rsm_x, &(osm.x)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
+        //     printf("SM_X NOT true\n");                  //!SM_X
+        // if (Compare(&rsm_y, &(osm.y)) != BOTH_ARE_SAME) //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
+        //     printf("SM_Y NOT true\n");                  //!SM_Y
 
 
         //!-----------------------------------------------------------------------------------------다룰 영역

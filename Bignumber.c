@@ -235,6 +235,117 @@ void OS64MUL_256(bigint_st *bi_X, bigint_st *bi_Y, bigint_st *bi_Z, bigint_st *P
     }
     Reduction_256(result, bi_Z, Prime);
 }
+void SPlit_Word_Mul(word* A, word* B, word* C)
+{
+     //! 곱셈:4  ,shift :8, 조건문 :2, 덧셈 12
+    word temp[2] = {0x00};
+    word temp0, temp1, temp2, temp3, temp4;
+    temp0 = ((*A) & 0x0000ffff) * ((*B) & 0x0000ffff);
+    temp1 = ((*A) >> 16) * ((*B) & 0x0000ffff);
+    temp2 = ((*B) >> 16) * ((*A) & 0x0000ffff);
+    temp3 = temp1 & 0x0000ffff;
+    temp4 = temp2 & 0x0000ffff;
+    temp3 = temp3 << 16;
+    temp4 = temp2 << 16;
+
+    temp[0] = temp0 + temp3;
+    if (temp[0] < temp0)
+        temp[1]++;
+    temp[0] += temp4;
+    if (temp[0] < temp4)
+        temp[1]++;
+
+    temp3 = temp1 >> 16;
+    temp4 = temp2 >> 16;
+    temp0 = ((*A) >> 16) * ((*B) >> 16);
+    temp[1] += temp3 + temp4 + temp0;
+
+    C[0] = temp[0];
+    C[1] = temp[1];
+
+}
+void PS_Split_MUL_256(bigint_st *bi_X,bigint_st *bi_Y,bigint_st *bi_Z,bigint_st *Prime)//? PS_Split version of Multiplication of Two Biginteger
+{
+    int cnt_i = 0, cnt_j = 0; //for loop counting variable
+    word result[WORD_LEN * WORD_LEN] = {0x00};
+    word AH = 0x00;
+    word AL = 0x00;
+    word BH = 0x00;
+    word BL = 0x00;
+    word tmp = 0x00;
+    word temp1[16] = {0x00};
+    word temp2[16] = {0x00};
+    word temp3[16] = {0x00};
+    int carry = 0;
+
+    for (cnt_i = 0; cnt_i < WORD_LEN; cnt_i++)
+    {
+        for (cnt_j = 0; cnt_j < WORD_LEN; cnt_j++)
+        {
+
+            AH = bi_X->a[cnt_i] >> 16;
+            AL = bi_X->a[cnt_i] & 0x0000ffff;
+            BH = bi_Y->a[cnt_j] >> 16;
+            BL = bi_Y->a[cnt_j] & 0x0000ffff;
+
+            tmp = AL * BL;
+            temp1[cnt_i + cnt_j] += tmp;
+            carry = temp1[cnt_i + cnt_j] < (tmp) ? 1 : 0;
+            temp1[cnt_i + cnt_j + 1] += carry;
+
+            tmp = AH * BH;
+            temp1[cnt_i + cnt_j + 1] += tmp;
+            carry = temp1[cnt_i + cnt_j + 1] < (tmp) ? 1 : 0;
+            temp1[cnt_i + cnt_j + 2] += carry;
+        }
+    }
+    //!
+    for (cnt_i = 0; cnt_i < WORD_LEN; cnt_i++)
+    {
+        for (cnt_j = 0; cnt_j < WORD_LEN; cnt_j++)
+        {
+            AH = bi_X->a[cnt_i] >> 16;
+            BH = bi_Y->a[cnt_j] >> 16;
+            AL = bi_X->a[cnt_i] & 0x0000ffff;
+            BL = bi_Y->a[cnt_j] & 0x0000ffff;
+
+            tmp = AL * BH;
+            temp2[cnt_i + cnt_j] += tmp;
+            carry = temp2[cnt_i + cnt_j] < tmp ? 1 : 0;
+            temp2[cnt_i + cnt_j + 1] += carry;
+
+            tmp = AH * BL;
+            temp2[cnt_i + cnt_j] += tmp;
+            carry = temp2[cnt_i + cnt_j] < tmp ? 1 : 0;
+            temp2[cnt_i + cnt_j + 1] += carry;
+        }
+    }
+    //!
+
+    for (cnt_i = 0; cnt_i < 2 * WORD_LEN; cnt_i++)
+    {
+        if (cnt_i == 0)
+        {
+            AH = temp2[cnt_i] >> 16;
+            temp2[cnt_i] = temp2[cnt_i] << 16;
+            continue;
+        }
+        AL = temp2[cnt_i] >> 16;
+        temp2[cnt_i] = temp2[cnt_i] << 16;
+        temp2[cnt_i] &= 0xffff0000;
+        temp2[cnt_i] ^= AH;
+        AH = AL;
+    }
+    carry = 0;
+    for (cnt_i = 0; cnt_i < WORD_LEN * 2; cnt_i++) //둘의 WORD_LEN이 같으므로 한번에 계산 가능하다
+    {
+        temp3[cnt_i] = temp1[cnt_i] + temp2[cnt_i] + carry; // 단순 덧셈. modulo는 자동적으로 작동
+        carry = temp3[cnt_i] < temp1[cnt_i] ? 1 : 0;
+        result[cnt_i] = temp3[cnt_i];
+    }
+    Reduction_256(result,bi_Z, Prime);
+
+}
 
 void Reduction_256(word *bi_X, bigint_st *bi_Z, bigint_st *Prime)//? Using Fast reduction 256 method
 {
