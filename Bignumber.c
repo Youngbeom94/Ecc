@@ -346,7 +346,33 @@ void PS_Split_MUL_256(bigint_st *bi_X,bigint_st *bi_Y,bigint_st *bi_Z,bigint_st 
     Reduction_256(result,bi_Z, Prime);
 
 }
+void OS_SPlit_MUL_256(bigint_st *bi_X,bigint_st *bi_Y,bigint_st *bi_Z,bigint_st *Prime)//? OS64 version of Multiplication of Two Biginteger
+{
+    int cnt_i, cnt_j; //for loop counting variable
+    word UV[2] = {0x00};
+    word result[WORD_LEN*WORD_LEN] = {0x00};
+    unsigned int U;
 
+    for (cnt_i = 0; cnt_i < WORD_LEN; cnt_i++)
+    {
+        UV[1] = 0x00;
+        for (cnt_j = 0; cnt_j < WORD_LEN; cnt_j++)
+        {
+            U = UV[1];
+            SPlit_Word_Mul(&(bi_X->a[cnt_i]), &(bi_Y->a[cnt_j]), UV);
+            UV[0] += U;
+            if (UV[0] < U)
+                UV[1]++;
+            UV[0] += result[cnt_i + cnt_j];
+            if (UV[0] < result[cnt_i + cnt_j])
+                UV[1]++;
+            result[cnt_i + cnt_j] = UV[0];
+        }
+        result[cnt_i + WORD_LEN] = UV[1];
+    }
+    Reduction_256(result,bi_Z, Prime);
+
+}
 void Reduction_256(word *bi_X, bigint_st *bi_Z, bigint_st *Prime)//? Using Fast reduction 256 method
 {
     int cnt_i = 0;

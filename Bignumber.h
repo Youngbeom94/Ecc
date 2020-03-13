@@ -77,6 +77,7 @@ void Subtraction(bigint_st *bi_X,bigint_st *bi_Y,bigint_st *bi_Z,bigint_st *Prim
 
 // //! Multiplication
 void OS64MUL_256(bigint_st *bi_X,bigint_st *bi_Y,bigint_st *bi_Z,bigint_st *Prime);//? OS64 version of Multiplication of Two Biginteger
+void OS_SPlit_MUL_256(bigint_st *bi_X,bigint_st *bi_Y,bigint_st *bi_Z,bigint_st *Prime);//? OS64 version of Multiplication of Two Biginteger
 void PS_Split_MUL_256(bigint_st *bi_X,bigint_st *bi_Y,bigint_st *bi_Z,bigint_st *Prime);//? PS_Split version of Multiplication of Two Biginteger
 void SPlit_Word_Mul(word* A, word* B, word* C);
 void Reduction_256(word *bi_X,bigint_st *bi_Z,bigint_st *Prime); //? Reduction_256 for Biginteger which have 2 * WORD_LEN wordlen
