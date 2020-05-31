@@ -1,5 +1,6 @@
 #include "Bignumber.h"
 
+//need to test function for ECC
 #if 1 //! file test for verification of Operation
 int main()
 {
@@ -48,6 +49,12 @@ int main()
     set_EN(&Based_Pt, bt_x, bt_y);
     //? fix array
 
+     word bt_i[8] = {0xABBEBAB0,0xA1E8F75B, 0x4292273, 0x2F26D3FC, 0x93152045, 0x48256BC1, 0x7DBA59F8 ,0x4387DB22};
+
+    set_bigint(&a,bt_i);
+    OS64MUL_256(&a, &a, &a, &Prime);
+    show(&a);
+
     bigint_st opA = {{0x00}, 0x00};
     bigint_st opB = {{0x00}, 0x00};
     bigint_st opC = {{0x00}, 0x00};
@@ -80,7 +87,7 @@ int main()
     word Input_rsm_y[8] = {0x00};
 
     unsigned long long cycles1 = 0, cycles2 = 0, totalcycles = 0;
-    int time = 10000; //!------------------------------------------- 1<=  time  <= 10000 몇번 확인?
+    int time = 1; //!------------------------------------------- 1<=  time  <= 10000 몇번 확인?
 
     for (cnt_j = 0; cnt_j < time; cnt_j++)
     {
