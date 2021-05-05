@@ -1,5 +1,6 @@
 #include "Bignumber.h"
 
+#define LOOP_COUNTER 100000
 //need to test function for ECC
 #if 1 //! file test for verification of Operation
 int main()
@@ -14,12 +15,14 @@ int main()
     R_opB = fopen("TV_opB.txt", "r");       // Read할 파일 개방
     R_opC = fopen("TV_opC.txt", "r");       // Read할 파일 개방
     R_opD = fopen("TV_opD.txt", "r");       // Read할 파일 개방
-    R_Scalar = fopen("TV_Scalar.txt", "r"); // Read할 파일 개방
+    //R_Scalar = fopen("TV_Scalar.txt", "r"); // Read할 파일 개방
+    R_Scalar = fopen("TV_Scalar_P256.txt", "r"); // Read할 파일 개방
     R_ADD = fopen("TV_PFADD_TV.txt", "r");  // Read할 파일 개방
     R_SUB = fopen("TV_PFSUB_TV.txt", "r");  // Read할 파일 개방
     R_SQR = fopen("TV_PFSQR_TV.txt", "r");  // Read할 파일 개방
     R_INV = fopen("TV_PFINV_TV.txt", "r");  // Read할 파일 개방
-    R_SM = fopen("TV_PFSM_TV.txt", "r");    // Read할 파일 개방
+    //R_SM = fopen("TV_PFSM_TV.txt", "r");    // Read할 파일 개방
+    R_SM = fopen("TV_SM_P256.txt", "r");    // Read할 파일 개방
     O_ADD = fopen("test add.txt", "w");     //Write할 파일 개방
     O_SUB = fopen("test_sub.txt", "w");     //Write할 파일 개방
     O_SQR = fopen("test_sqr.txt", "w");     //Write할 파일 개방
@@ -50,10 +53,6 @@ int main()
     //? fix array
 
      word bt_i[8] = {0xABBEBAB0,0xA1E8F75B, 0x4292273, 0x2F26D3FC, 0x93152045, 0x48256BC1, 0x7DBA59F8 ,0x4387DB22};
-
-    set_bigint(&a,bt_i);
-    OS64MUL_256(&a, &a, &a, &Prime);
-    show(&a);
 
     bigint_st opA = {{0x00}, 0x00};
     bigint_st opB = {{0x00}, 0x00};
@@ -87,9 +86,8 @@ int main()
     word Input_rsm_y[8] = {0x00};
 
     unsigned long long cycles1 = 0, cycles2 = 0, totalcycles = 0;
-    int time = 1; //!------------------------------------------- 1<=  time  <= 10000 몇번 확인?
 
-    for (cnt_j = 0; cnt_j < time; cnt_j++)
+    for (cnt_j = 0; cnt_j < LOOP_COUNTER; cnt_j++)
     {
         for (cnt_i = 0; cnt_i < 257; cnt_i++)
         {
@@ -127,35 +125,73 @@ int main()
         set_EN_reset(&osm);
 
 
-        //!-----------------------------------------------------------------------------------다룰 영역
-        Addition(&opA, &opB, &oadd, &Prime);
-        Subtraction(&opA, &opB, &osub, &Prime);
-        // OS64MUL_256(&opC, &opC, &osqr, &Prime);
-        OS_SPlit_MUL_256(&opC,&opC,&osqr, &Prime);
-        // PS_Split_MUL_256(&opC,&opC,&osqr, &Prime);
-        // Inverse_FLT(&opD, &oinv, &Prime);
-        Inverse_EEA(&opD, &oinv, &Prime);
-        // ECLtoR(&Based_Pt, &Scalar, &osm, &Prime, &a);
-        // ECRtoL(&Based_Pt, &Scalar, &osm, &Prime, &a);
+        //!-----------------------------------------------------------------------------------Test
+        //TODO //////////////////////////////////////////////////////////////////////////////////////////
+        //* Addition verification test
+        Addition(&opA, &opB, &oadd, &Prime);  
 
-        // Trns_A_to_J(&in,&Based_Pt, &Prime); //* L_to_R
-        // ECLtoR_J(&in,&Scalar,&out, &Prime); //* L_to_R
-        // Trns_J_to_A(&osm,&out,&Prime);      //* L_to_R
+        //TODO //////////////////////////////////////////////////////////////////////////////////////////
+        //* Subtraction verification test
+        Subtraction(&opA, &opB, &osub, &Prime); 
+
+        //TODO //////////////////////////////////////////////////////////////////////////////////////////
+        //* Multiplication_OS verification test
+        // OS64MUL_256(&opC, &opC, &osqr, &Prime);
+
+        //* Multiplication_OS_Split verification test
+        OS_SPlit_MUL_256(&opC,&opC,&osqr, &Prime);
+
+        //* Multiplication_PS_Split verification test
+        // PS_Split_MUL_256(&opC,&opC,&osqr, &Prime);
+
+        //TODO //////////////////////////////////////////////////////////////////////////////////////////
+        //* Inverse_Flt verification test
+        // Inverse_FLT(&opD, &oinv, &Prime); 
+
+        //* Inverse_EEA verification test
+        Inverse_EEA(&opD, &oinv, &Prime);
+
+        //TODO //////////////////////////////////////////////////////////////////////////////////////////
+        //* Scalar_LtoR verification test
+        //ECLtoR(&Based_Pt, &Scalar, &osm, &Prime, &a); 
+
+        //* Scalar_RtoL verification test
+        //ECRtoL(&Based_Pt, &Scalar, &osm, &Prime, &a); 
+
+        //* L_to_R , Scalar_LtoR_Jacobian verification test
+        // Trns_A_to_J(&in,&Based_Pt, &Prime); 
+        // ECLtoR_J(&in,&Scalar,&out, &Prime); 
+        // Trns_J_to_A(&osm,&out,&Prime);      
+
+        //*_wNAF Scalar_LtoR_Affine verification test
+        //NAF_recoding(&Scalar, NAF, &Prime);   
+        //ECLtoR_wNAF(&Based_Pt, NAF, &osm, &Prime, &a);
+
+        //*_wNAF_J Scalar_LtoR_Jacobian verification test
+        // NAF_recoding(&Scalar, NAF, &Prime);   
+        // Trns_A_to_J(&in, &Based_Pt, &Prime);  
+        // ECLtoR_J_wNAF(&in, NAF, &out, &Prime); 
+        // Trns_J_to_A(&osm, &out, &Prime);      
+        
+        //* L_to_R _Comb Scalar_LtoR_Jacobian verification test
+        // Trns_A_to_J(&in, &Based_Pt, &Prime);  
+        // comb_Table(Table, J_Table, &Based_Pt, &Scalar, &Prime);
+        // ECLtoR_J_comb(&in, Table, J_Table, &out, &Prime);
+        // Trns_J_to_A(&osm, &out, &Prime); 
+
+        
 
         cycles1 = cpucycles(); //todo   ---------사이클을 재고싶은 함수 앞에 두기
-        NAF_recoding(&Scalar, NAF, &Prime);   //?_wNAF_J
-        Trns_A_to_J(&in, &Based_Pt, &Prime);  //? L_to_R _wNAF_J
-        ECLtoR_J_wNAF(&in, NAF, &out, &Prime); //? L_to_R _wNAF_J
-        Trns_J_to_A(&osm, &out, &Prime);      //? L_to_R _wNAF_J
+        //*_wNAF_J Scalar_LtoR_Jacobian verification test
+        NAF_recoding(&Scalar, NAF, &Prime);   
+        Trns_A_to_J(&in, &Based_Pt, &Prime);  
+        ECLtoR_J_wNAF(&in, NAF, &out, &Prime); 
+        Trns_J_to_A(&osm, &out, &Prime);    
         cycles2 = cpucycles();//todo    ----------사이클을 재고싶은 함수 뒤에 두기
-
-        // Trns_A_to_J(&in, &Based_Pt, &Prime);  //* L_to_R _Comb
-        // comb_Table(Table, J_Table, &Based_Pt, &Scalar, &Prime);//* L_to_R _Comb
-        // ECLtoR_J_comb(&in, Table, J_Table, &out, &Prime);//* L_to_R _Comb
-        // Trns_J_to_A(&osm, &out, &Prime); //* L_to_R _Comb
 
         totalcycles += cycles2 -  cycles1;//todo ---------- 고정
 
+        //!-----------------------------------------------------------------------------------------구현 정확성 테스트
         if (Compare(&radd, &oadd) != BOTH_ARE_SAME)     //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
             printf("add NOT true\n");                   //!add
         if (Compare(&rsub, &osub) != BOTH_ARE_SAME)     //주어진 답지와 계산한 값이 맞지 않은경우 Not_True
@@ -192,7 +228,7 @@ int main()
         fprintf(O_INV, "\n\n");
         fprintf(O_SM, "\n\n");
     }
-    printf("cycles %d번 계산한 총 사이클/ %d  = %10lld\n", time,time,totalcycles / time); //todo
+    printf("cycles %d번 계산한 총 사이클/ %d  = %10lld\n", LOOP_COUNTER,LOOP_COUNTER,totalcycles / LOOP_COUNTER); //todo
     fclose(R_opB);    //개방한 파일들 닫아주기
     fclose(R_opA);    //개방한 파일들 닫아주기
     fclose(R_opC);    //개방한 파일들 닫아주기

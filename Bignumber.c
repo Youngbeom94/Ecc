@@ -1134,6 +1134,77 @@ void NAF_recoding(bigint_st *Scalar, char *NAF, bigint_st *Prime)
     }
 }
 
+void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a)
+{
+    int cnt_i = 0, cnt_j = 0;
+    int DC = 0x00;
+    Ecc_pt temp1 = {{0x00}, 0x00};
+    Ecc_pt temp2 = {{0x00}, 0x00};
+    Ecc_pt temp3 = {{0x00}, 0x00};
+    Ecc_pt Pi[4] = {{0x00}, 0x00};
+    Ecc_pt Pi2[4] = {{0x00}, 0x00};
+    Ecc_pt ttemp = {{0x00}, 0x00};
+    char temp = 0;
+
+    EN_copy(Pi, EN_P); //* 1
+
+    ECDBL(EN_P, &temp1, Prime, a);
+    ECADD(EN_P, &ttemp, &temp2, Prime);
+    EN_copy(Pi + 1, &temp2); //* 3
+    ECADD(Pi + 1, &ttemp, &temp3, Prime);
+    EN_copy(Pi + 2, &temp3); //* 5
+    ECADD(Pi + 2, &ttemp, &temp3, Prime);
+    EN_copy(Pi + 3, &temp3); //* 7
+
+    EN_copy(Pi2, Pi); //* 1
+    Subtraction(Prime, &(Pi[0].y), &(Pi2[0].y), Prime);
+    EN_copy(Pi2 + 1, Pi + 1); //* 3
+    Subtraction(Prime, &(Pi[1].y), &(Pi2[1].y), Prime);
+    EN_copy(Pi2 + 2, Pi + 2); //* 5
+    Subtraction(Prime, &(Pi[2].y), &(Pi2[2].y), Prime);
+    EN_copy(Pi2 + 3, Pi + 3); //* 7
+    Subtraction(Prime, &(Pi[3].y), &(Pi2[3].y), Prime);
+
+    int find_first_bit = 0;
+    //!reset?
+    for (cnt_i = WORD_LEN * WORD_BITLEN + 1; cnt_i >= 0; cnt_i--)
+    {
+        if (find_first_bit == 1)
+        {
+            ECDBL(&temp1, &temp2, Prime,a);
+           
+            if (NAF[cnt_i] != 0x00)
+            {
+                if (NAF[cnt_i] > 0x00)
+                {
+                    EN_copy(&ttemp,&Pi[((NAF[cnt_i] - 1) / 2)]);
+                    ECADD(&temp2, &ttemp, &temp3, Prime);
+                    EN_copy(&temp1, &temp3);
+                    continue;
+                }
+                else
+                {
+                    EN_copy(&ttemp,&Pi2[((-NAF[cnt_i] - 1) / 2)]);
+                    ECADD(&temp2, &ttemp, &temp3, Prime);
+                    EN_copy(&temp1, &temp3);
+                    continue;
+                }
+            }
+            EN_copy(&temp1, &temp2);
+            continue;
+        }
+        if (NAF[cnt_i] == 0)
+            continue;
+        if (NAF[cnt_i] != 0)
+        {
+            EN_copy(&temp1, &Pi[((NAF[cnt_i] - 1) / 2)]);
+            find_first_bit = 1;
+        }
+        continue;
+    }
+    EN_copy(EN_R, &temp1);
+}
+
 void ECLtoR_J_wNAF(Ecc_Jpt *EN_P, char *NAF, Ecc_Jpt *EN_R, bigint_st *Prime)
 {
     int cnt_i = 0, cnt_j = 0;
@@ -1205,6 +1276,7 @@ void ECLtoR_J_wNAF(Ecc_Jpt *EN_P, char *NAF, Ecc_Jpt *EN_R, bigint_st *Prime)
     }
     EN_J_copy(EN_R, &temp1);
 }
+
 
 void comb_Table(char table[WORD_LEN][WORD_BITLEN], Ecc_pt *J_table, Ecc_pt *EN_P, bigint_st *K, bigint_st *Prime)
 {

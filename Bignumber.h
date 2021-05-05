@@ -115,6 +115,7 @@ void ECLtoR_J(Ecc_Jpt *EN_P, bigint_st *K ,Ecc_Jpt *EN_R, bigint_st *Prime);//? 
 
 // //! ECC Windows method of Scalar Mul by Jacobian
 void NAF_recoding(bigint_st *Scalar, char *NAF, bigint_st *Prime);//? Make char array for wNAF method using Scalar
+void ECLtoR_wNAF(Ecc_pt *EN_P, char *NAF ,Ecc_pt *EN_R, bigint_st *Prime, bigint_st *a);//? Scalar Mul Using wNAF L to R method; Pixed Point is Base Ecc Point on Affine coordinate
 void ECLtoR_J_wNAF(Ecc_Jpt *EN_P, char *NAF ,Ecc_Jpt *EN_R, bigint_st *Prime);//? Scalar Mul Using wNAF L to R method; Pixed Point is Base Ecc Point on Jacobian coordinate
 
 // //! ECC comb_table method of Scalar Mul by Jacobian
